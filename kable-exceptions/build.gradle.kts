@@ -29,14 +29,6 @@ kotlin {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("exceptionsRelease") {
-            from(components["kotlin"])
-            groupId = "com.github.X2Mobile"
-            artifactId = "kable"
-            version = "1.0.0"
-        }
-    }
     repositories {
         mavenLocal()
     }

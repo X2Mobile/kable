@@ -78,14 +78,6 @@ android {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("coreRelease") {
-            from(components["kotlin"])
-            groupId = "com.github.X2Mobile"
-            artifactId = "kable"
-            version = "1.0.0"
-        }
-    }
     repositories {
         mavenLocal()
     }

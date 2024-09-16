@@ -25,14 +25,6 @@ kotlin {
 }
 
 publishing {
-    publications {
-        create<MavenPublication>("logEngineKhronicleRelease") {
-            from(components["kotlin"])
-            groupId = "com.github.X2Mobile"
-            artifactId = "kable"
-            version = "1.0.0"
-        }
-    }
     repositories {
         mavenLocal()
     }
