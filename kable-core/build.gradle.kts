@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.atomicfu)
     id("org.jmailen.kotlinter")
     id("org.jetbrains.dokka")
-    id("com.vanniktech.maven.publish")
+    id("maven-publish")
 }
 
 kotlin {
