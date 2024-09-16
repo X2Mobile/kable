@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.atomicfu)
     id("org.jmailen.kotlinter")
     id("org.jetbrains.dokka")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
 }
 
 kotlin {
@@ -74,11 +74,5 @@ android {
         // we disable the "missing permission" lint check. Caution must be taken during later Android version bumps to
         // make sure we aren't missing any newly introduced permission requirements.
         disable += "MissingPermission"
-    }
-}
-
-publishing {
-    repositories {
-        mavenLocal()
     }
 }

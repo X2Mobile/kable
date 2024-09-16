@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jmailen.kotlinter")
     id("org.jetbrains.dokka")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
 }
 
 kotlin {
@@ -21,11 +21,5 @@ kotlin {
             api(project(":kable-core"))
             api(libs.khronicle)
         }
-    }
-}
-
-publishing {
-    repositories {
-        mavenLocal()
     }
 }

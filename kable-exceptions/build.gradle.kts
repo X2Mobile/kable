@@ -2,7 +2,7 @@ plugins {
     kotlin("multiplatform")
     id("org.jmailen.kotlinter")
     id("org.jetbrains.dokka")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
 }
 
 kotlin {
@@ -25,11 +25,5 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-    }
-}
-
-publishing {
-    repositories {
-        mavenLocal()
     }
 }
