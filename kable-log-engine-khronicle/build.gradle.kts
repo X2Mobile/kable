@@ -26,7 +26,7 @@ kotlin {
 
 publishing {
     publications {
-        create<MavenPublication>("release") {
+        create<MavenPublication>("logEngineKhronicleRelease") {
             from(components["kotlin"])
             groupId = "com.github.X2Mobile"
             artifactId = "kable"

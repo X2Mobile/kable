@@ -79,7 +79,7 @@ android {
 
 publishing {
     publications {
-        create<MavenPublication>("release") {
+        create<MavenPublication>("coreRelease") {
             from(components["kotlin"])
             groupId = "com.github.X2Mobile"
             artifactId = "kable"

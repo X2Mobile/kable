@@ -30,7 +30,7 @@ kotlin {
 
 publishing {
     publications {
-        create<MavenPublication>("release") {
+        create<MavenPublication>("exceptionsRelease") {
             from(components["kotlin"])
             groupId = "com.github.X2Mobile"
             artifactId = "kable"
