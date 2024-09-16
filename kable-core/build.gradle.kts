@@ -76,3 +76,17 @@ android {
         disable += "MissingPermission"
     }
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("release") {
+            from(components["kotlin"])
+            groupId = "com.github.X2Mobile"
+            artifactId = "kable"
+            version = "1.0.0"
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
