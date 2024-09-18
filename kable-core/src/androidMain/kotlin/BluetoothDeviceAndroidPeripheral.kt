@@ -24,6 +24,7 @@ import android.bluetooth.BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
 import android.bluetooth.BluetoothGattDescriptor.ENABLE_INDICATION_VALUE
 import android.bluetooth.BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat.RECEIVER_EXPORTED
 import androidx.core.content.IntentCompat
 import com.benasher44.uuid.uuidFrom
 import com.juul.kable.AndroidPeripheral.Priority
@@ -123,7 +124,7 @@ internal class BluetoothDeviceAndroidPeripheral(
     )
 
     override val bondState: Flow<AndroidPeripheral.Bond> =
-        broadcastReceiverFlow(IntentFilter(ACTION_BOND_STATE_CHANGED))
+        broadcastReceiverFlow(IntentFilter(ACTION_BOND_STATE_CHANGED), RECEIVER_EXPORTED)
             .filter { intent ->
                 bluetoothDevice == IntentCompat.getParcelableExtra(intent, EXTRA_DEVICE, BluetoothDevice::class.java)
             }
