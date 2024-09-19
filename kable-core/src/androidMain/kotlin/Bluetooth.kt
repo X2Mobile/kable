@@ -15,6 +15,7 @@ import android.location.LocationManager.PROVIDERS_CHANGED_ACTION
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.R
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.RECEIVER_EXPORTED
 import androidx.core.location.LocationManagerCompat
 import com.juul.kable.Bluetooth.Availability.Available
 import com.juul.kable.Bluetooth.Availability.Unavailable
@@ -57,7 +58,7 @@ private fun Context.isLocationEnabledOrNull(): Boolean? =
 
 private val locationEnabledOrNullFlow = when {
     SDK_INT > R -> flowOf(true)
-    else -> broadcastReceiverFlow(IntentFilter(PROVIDERS_CHANGED_ACTION))
+    else -> broadcastReceiverFlow(IntentFilter(PROVIDERS_CHANGED_ACTION), RECEIVER_EXPORTED)
         .map { intent ->
             if (SDK_INT == R) {
                 intent.getBooleanExtra(EXTRA_PROVIDER_ENABLED, false)
@@ -73,7 +74,7 @@ private val bluetoothStateFlow = flow {
     when (val adapter = getBluetoothAdapterOrNull()) {
         null -> emit(Unavailable(reason = AdapterNotAvailable))
         else -> emitAll(
-            broadcastReceiverFlow(IntentFilter(BLUETOOTH_STATE_CHANGED))
+            broadcastReceiverFlow(IntentFilter(BLUETOOTH_STATE_CHANGED), RECEIVER_EXPORTED)
                 .map { intent -> intent.getIntExtra(EXTRA_STATE, ERROR) }
                 .onStart {
                     emit(if (adapter.isEnabled) STATE_ON else STATE_OFF)
