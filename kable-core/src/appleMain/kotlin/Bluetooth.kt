@@ -10,6 +10,7 @@ import com.juul.kable.Reason.Unsupported
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import platform.CoreBluetooth.CBCentralManagerStatePoweredOff
 import platform.CoreBluetooth.CBCentralManagerStatePoweredOn
@@ -26,6 +27,8 @@ public actual enum class Reason {
     Unknown, // CBManagerState.unknown
 }
 
+public actual class Device
+
 internal actual val bluetoothAvailability: Flow<Bluetooth.Availability> = flow {
     // flow + emitAll dance so that lazy `CentralManager.Default` is not initialized until this flow is active.
     emitAll(CentralManager.Default.delegate.state)
@@ -39,3 +42,5 @@ internal actual val bluetoothAvailability: Flow<Bluetooth.Availability> = flow {
         else -> Unavailable(reason = Unknown)
     }
 }
+
+internal actual val bluetoothBondedDevices: Flow<List<Device>> = flowOf()

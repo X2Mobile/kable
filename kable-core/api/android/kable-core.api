@@ -65,6 +65,7 @@ public final class com/juul/kable/AndroidPeripheral$WriteResult : java/lang/Enum
 public final class com/juul/kable/Bluetooth {
 	public static final field INSTANCE Lcom/juul/kable/Bluetooth;
 	public final fun getAvailability ()Lkotlinx/coroutines/flow/Flow;
+	public final fun getBondedDevices ()Lkotlinx/coroutines/flow/Flow;
 	public final fun isSupported (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 

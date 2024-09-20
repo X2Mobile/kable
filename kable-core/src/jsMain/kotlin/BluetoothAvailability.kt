@@ -17,6 +17,8 @@ public actual enum class Reason {
     BluetoothUndefined,
 }
 
+public actual class Device
+
 private const val AVAILABILITY_CHANGED = "availabilitychanged"
 
 internal actual val bluetoothAvailability: Flow<Bluetooth.Availability> =
@@ -40,3 +42,5 @@ internal actual val bluetoothAvailability: Flow<Bluetooth.Availability> =
             emit(availability)
         }
     } ?: flowOf(Unavailable(reason = BluetoothUndefined))
+
+internal actual val bluetoothBondedDevices: Flow<List<Device>> = flowOf()
