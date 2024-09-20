@@ -9,6 +9,8 @@ import com.juul.kable.bluetooth.isSupported as isBluetoothSupported
 
 public expect enum class Reason
 
+public expect class Device
+
 public object Bluetooth {
 
     /**
@@ -45,6 +47,10 @@ public object Bluetooth {
     public suspend fun isSupported(): Boolean = isBluetoothSupported()
 
     public val availability: Flow<Availability> = bluetoothAvailability
+
+    public val bondedDevices: Flow<List<Device>> = bluetoothBondedDevices
 }
 
 internal expect val bluetoothAvailability: Flow<Bluetooth.Availability>
+
+internal expect val bluetoothBondedDevices: Flow<List<Device>>

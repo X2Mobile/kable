@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothAdapter.STATE_OFF
 import android.bluetooth.BluetoothAdapter.STATE_ON
 import android.bluetooth.BluetoothAdapter.STATE_TURNING_OFF
 import android.bluetooth.BluetoothAdapter.STATE_TURNING_ON
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothDevice.ACTION_BOND_STATE_CHANGED
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.IntentFilter
@@ -49,6 +51,8 @@ public actual enum class Reason {
     /** Only applicable on Android 11 (API 30) and lower. */
     LocationServicesDisabled,
 }
+
+public actual typealias Device = BluetoothDevice
 
 private fun Context.getLocationManagerOrNull() =
     ContextCompat.getSystemService(this, LocationManager::class.java)
@@ -103,3 +107,8 @@ internal actual val bluetoothAvailability: Flow<Bluetooth.Availability> =
             null -> Unavailable(reason = AdapterNotAvailable)
         }
     }
+
+internal actual val bluetoothBondedDevices: Flow<List<BluetoothDevice>> =
+    broadcastReceiverFlow(IntentFilter(ACTION_BOND_STATE_CHANGED), RECEIVER_EXPORTED)
+        .map { getBluetoothAdapter().bondedDevices.toList() }
+        .onStart { emit(getBluetoothAdapter().bondedDevices.toList()) }
