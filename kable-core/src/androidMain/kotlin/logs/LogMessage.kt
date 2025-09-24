@@ -4,7 +4,8 @@ package com.juul.kable.logs
 
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
-import com.juul.kable.gatt.GattStatus
+import com.juul.kable.android.GattStatus
+import kotlin.uuid.toKotlinUuid
 
 internal actual val LOG_INDENT: String? = null
 
@@ -14,15 +15,15 @@ internal fun LogMessage.detail(status: GattStatus) {
 
 internal fun LogMessage.detail(characteristic: BluetoothGattCharacteristic) {
     detail(
-        characteristic.service.uuid,
-        characteristic.uuid,
+        characteristic.service.uuid.toKotlinUuid(),
+        characteristic.uuid.toKotlinUuid(),
     )
 }
 
 internal fun LogMessage.detail(descriptor: BluetoothGattDescriptor) {
     detail(
-        descriptor.characteristic.service.uuid,
-        descriptor.characteristic.uuid,
-        descriptor.uuid,
+        descriptor.characteristic.service.uuid.toKotlinUuid(),
+        descriptor.characteristic.uuid.toKotlinUuid(),
+        descriptor.uuid.toKotlinUuid(),
     )
 }

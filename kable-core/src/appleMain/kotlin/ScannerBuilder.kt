@@ -1,17 +1,17 @@
 package com.juul.kable
 
-import com.benasher44.uuid.Uuid
 import com.juul.kable.logs.Logging
 import com.juul.kable.logs.LoggingBuilder
 import platform.CoreBluetooth.CBCentralManagerScanOptionAllowDuplicatesKey
 import platform.CoreBluetooth.CBCentralManagerScanOptionSolicitedServiceUUIDsKey
+import kotlin.uuid.Uuid
 
 public actual class ScannerBuilder {
 
     @Deprecated(
         message = "Use filters(FiltersBuilder.() -> Unit)",
         replaceWith = ReplaceWith("filters { }"),
-        level = DeprecationLevel.ERROR,
+        level = DeprecationLevel.HIDDEN,
     )
     public actual var filters: List<Filter>? = null
 
@@ -25,7 +25,7 @@ public actual class ScannerBuilder {
      * Specifies whether the scan should run without duplicate filtering. This corresponds to
      * Core Bluetooth's [CBCentralManagerScanOptionAllowDuplicatesKey] scanning option.
      */
-    public var allowDuplicateKeys: Boolean? = null
+    public var allowDuplicateKeys: Boolean? = true
 
     /**
      * Causes the scanner to scan for peripherals soliciting any of the services contained in the

@@ -1,6 +1,5 @@
 package com.juul.kable
 
-import com.benasher44.uuid.Uuid
 import com.juul.kable.CentralManagerDelegate.Response.DidDiscoverPeripheral
 import com.juul.kable.Filter.Service
 import com.juul.kable.UnmetRequirementReason.BluetoothDisabled
@@ -18,6 +17,7 @@ import platform.CoreBluetooth.CBManagerStatePoweredOff
 import platform.CoreBluetooth.CBManagerStatePoweredOn
 import platform.CoreBluetooth.CBManagerStateUnauthorized
 import platform.CoreBluetooth.CBManagerStateUnsupported
+import kotlin.uuid.Uuid
 
 internal class CentralManagerCoreBluetoothScanner(
     central: CentralManager,
@@ -73,6 +73,7 @@ internal class CentralManagerCoreBluetoothScanner(
                     services = advertisementData.serviceUuids,
                     name = advertisementData.localName,
                     manufacturerData = advertisementData.manufacturerData,
+                    serviceData = advertisementData.serviceData?.map { (key, value) -> key.toUuid() to value.toByteArray() }?.toMap(),
                 )
             }
             .map { (cbPeripheral, rssi, advertisementData) ->

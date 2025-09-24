@@ -3,12 +3,11 @@ package com.juul.kable
 import com.juul.kable.logs.Logger
 import js.errors.JsError
 import js.errors.TypeError
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.ensureActive
 import web.errors.DOMException
-import web.errors.DOMException.Companion.NotFoundError
-import web.errors.DOMException.Companion.SecurityError
+import web.errors.NotFoundError
+import web.errors.SecurityError
 import kotlin.coroutines.coroutineContext
 
 /**
@@ -27,7 +26,6 @@ import kotlin.coroutines.coroutineContext
  */
 public suspend fun requestPeripheral(
     options: Options,
-    scope: CoroutineScope,
     builderAction: PeripheralBuilderAction = {},
 ): Peripheral? {
     val bluetooth = bluetoothOrThrow()
@@ -38,7 +36,7 @@ public suspend fun requestPeripheral(
         coroutineContext.ensureActive()
         throw when (e) {
             is TypeError -> IllegalStateException("Requesting a device is not supported", e)
-            else -> InternalException("Failed to invoke device request", e)
+            else -> InternalError("Failed to invoke device request", e)
         }
     }
 
@@ -52,15 +50,15 @@ public suspend fun requestPeripheral(
         coroutineContext.ensureActive()
         when {
             // User cancelled picker dialog by either clicking outside dialog, or clicking cancel button.
-            e is DOMException && e.name == NotFoundError -> null
+            e is DOMException && e.name == DOMException.NotFoundError -> null
 
             // The Web Bluetooth API can only be used in a secure context.
             // https://developer.mozilla.org/en-US/docs/Web/API/Web_Bluetooth_API#security_considerations
-            e is DOMException && e.name == SecurityError ->
+            e is DOMException && e.name == DOMException.SecurityError ->
                 throw IllegalStateException("Operation is not permitted in this context due to security concerns", e)
 
             e is TypeError -> {
-                // Example failure when executing `requestDevice(jso {})`:
+                // Example failure when executing `requestDevice(unsafeJso {})`:
                 // > TypeError: Failed to execute 'requestDevice' on 'Bluetooth': Either 'filters'
                 // > should be present or 'acceptAllAdvertisements' should be true, but not both.
                 //
@@ -72,12 +70,10 @@ public suspend fun requestPeripheral(
                     detail("processed", JSON.stringify(requestDeviceOptions))
                     message = e.toString()
                 }
-                throw InternalException("Type error when requesting device", e)
+                throw InternalError("Type error when requesting device", e)
             }
 
-            else -> throw InternalException("Failed to request device", e)
+            else -> throw InternalError("Failed to request device", e)
         }
-    }?.let { device ->
-        builder.build(device, scope)
-    }
+    }?.let(builder::build)
 }

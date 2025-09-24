@@ -1,19 +1,19 @@
 plugins {
-    // Android plugin must be before multiplatform plugin until https://youtrack.jetbrains.com/issue/KT-34038 is fixed.
-    id("com.android.library")
-    kotlin("multiplatform")
-    id("kotlin-parcelize")
     alias(libs.plugins.atomicfu)
-    id("org.jmailen.kotlinter")
+    id("com.android.library")
+    id("com.vanniktech.maven.publish")
+    id("kotlin-parcelize")
     id("org.jetbrains.dokka")
+    id("org.jmailen.kotlinter")
     id("maven-publish")
+    kotlin("multiplatform")
 }
 
 kotlin {
     explicitApi()
     jvmToolchain(libs.versions.jvm.toolchain.get().toInt())
 
-    androidTarget().publishAllLibraryVariants()
+    androidTarget().publishLibraryVariants("debug", "release")
     iosArm64()
     iosSimulatorArm64()
     iosX64()
@@ -23,15 +23,20 @@ kotlin {
     jvm()
 
     sourceSets {
+        all {
+            languageSettings {
+                optIn("kotlin.uuid.ExperimentalUuidApi")
+            }
+        }
+
         commonMain.dependencies {
             api(libs.kotlinx.coroutines.core)
-            api(libs.uuid)
-            api(project(":kable-exceptions"))
-            implementation(libs.datetime)
+            api(libs.kotlinx.io)
             implementation(libs.tuulbox.collections)
         }
 
         commonTest.dependencies {
+            implementation(kotlin("reflect")) // For `assertIs`.
             implementation(kotlin("test"))
             implementation(libs.khronicle)
             implementation(libs.kotlinx.coroutines.test)
@@ -49,9 +54,19 @@ kotlin {
             implementation(libs.tuulbox.coroutines)
         }
 
+        androidUnitTest.dependencies {
+            implementation(libs.equalsverifier)
+            implementation(libs.mockk)
+            implementation(libs.robolectric)
+        }
+
         jsMain.dependencies {
             api(libs.wrappers.web)
             api(project.dependencies.platform(libs.wrappers.bom))
+        }
+
+        jvmMain.dependencies {
+            implementation(project(":kable-btleplug-ffi"))
         }
     }
 }
@@ -74,5 +89,11 @@ android {
         // we disable the "missing permission" lint check. Caution must be taken during later Android version bumps to
         // make sure we aren't missing any newly introduced permission requirements.
         disable += "MissingPermission"
+    }
+}
+
+dokka {
+    pluginsConfiguration.html {
+        footerMessage.set("(c) JUUL Labs, Inc.")
     }
 }

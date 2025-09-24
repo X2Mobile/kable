@@ -1,6 +1,5 @@
 package com.juul.kable
 
-import com.benasher44.uuid.Uuid
 import platform.CoreBluetooth.CBAdvertisementDataIsConnectable
 import platform.CoreBluetooth.CBAdvertisementDataLocalNameKey
 import platform.CoreBluetooth.CBAdvertisementDataManufacturerDataKey
@@ -12,10 +11,11 @@ import platform.CoreBluetooth.CBUUID
 import platform.Foundation.NSData
 import platform.Foundation.NSNumber
 import kotlin.experimental.ExperimentalNativeApi
+import kotlin.uuid.Uuid
 
 internal class CBPeripheralCoreBluetoothAdvertisement(
     override val rssi: Int,
-    val data: Map<String, Any>,
+    private val data: Map<String, Any>,
     internal val cbPeripheral: CBPeripheral,
 ) : PlatformAdvertisement {
 
@@ -69,12 +69,18 @@ internal class CBPeripheralCoreBluetoothAdvertisement(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is PlatformAdvertisement) return false
-        if (other.identifier != identifier) return false
-        return true
+        if (other !is CBPeripheralCoreBluetoothAdvertisement) return false
+        if (identifier != other.identifier) return false
+        if (rssi != other.rssi) return false
+        return data == other.data
     }
 
-    override fun hashCode(): Int = identifier.hashCode()
+    override fun hashCode(): Int {
+        var result = rssi.hashCode()
+        result = 31 * result + data.hashCode()
+        result = 31 * result + identifier.hashCode()
+        return result
+    }
 
     override fun toString(): String =
         "Advertisement(identifier=$identifier, name=$name, rssi=$rssi, txPower=$txPower)"
@@ -86,7 +92,7 @@ internal fun NSData.toManufacturerData(): ManufacturerData? = toByteArray().toMa
 private fun ByteArray.toManufacturerData(): ManufacturerData? =
     takeIf { size >= 2 }?.getShortAt(0)?.let { code ->
         ManufacturerData(
-            code.toInt(),
+            code.toInt() and 0xFF_FF,
             if (size > 2) slice(2 until size).toByteArray() else byteArrayOf(),
         )
     }

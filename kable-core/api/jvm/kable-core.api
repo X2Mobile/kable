@@ -1,5 +1,5 @@
 public abstract interface class com/juul/kable/Advertisement {
-	public abstract fun getIdentifier ()Ljava/lang/String;
+	public abstract fun getIdentifier ()Lcom/juul/kable/Identifier;
 	public abstract fun getManufacturerData ()Lcom/juul/kable/ManufacturerData;
 	public abstract fun getName ()Ljava/lang/String;
 	public abstract fun getPeripheralName ()Ljava/lang/String;
@@ -8,7 +8,7 @@ public abstract interface class com/juul/kable/Advertisement {
 	public abstract fun getUuids ()Ljava/util/List;
 	public abstract fun isConnectable ()Ljava/lang/Boolean;
 	public abstract fun manufacturerData (I)[B
-	public abstract fun serviceData (Ljava/util/UUID;)[B
+	public abstract fun serviceData (Lkotlin/uuid/Uuid;)[B
 }
 
 public final class com/juul/kable/Bluetooth {
@@ -41,14 +41,14 @@ public final class com/juul/kable/Bluetooth$Availability$Unavailable : com/juul/
 
 public final class com/juul/kable/Bluetooth$BaseUuid {
 	public static final field INSTANCE Lcom/juul/kable/Bluetooth$BaseUuid;
-	public final fun plus (I)Ljava/util/UUID;
-	public final fun plus (J)Ljava/util/UUID;
+	public final fun plus (I)Lkotlin/uuid/Uuid;
+	public final fun plus (J)Lkotlin/uuid/Uuid;
 	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class com/juul/kable/Characteristic {
-	public abstract fun getCharacteristicUuid ()Ljava/util/UUID;
-	public abstract fun getServiceUuid ()Ljava/util/UUID;
+	public abstract fun getCharacteristicUuid ()Lkotlin/uuid/Uuid;
+	public abstract fun getServiceUuid ()Lkotlin/uuid/Uuid;
 }
 
 public final class com/juul/kable/Characteristic$Properties {
@@ -65,34 +65,28 @@ public final class com/juul/kable/Characteristic$Properties {
 }
 
 public abstract interface class com/juul/kable/Descriptor {
-	public abstract fun getCharacteristicUuid ()Ljava/util/UUID;
-	public abstract fun getDescriptorUuid ()Ljava/util/UUID;
-	public abstract fun getServiceUuid ()Ljava/util/UUID;
+	public abstract fun getCharacteristicUuid ()Lkotlin/uuid/Uuid;
+	public abstract fun getDescriptorUuid ()Lkotlin/uuid/Uuid;
+	public abstract fun getServiceUuid ()Lkotlin/uuid/Uuid;
+}
+
+public abstract interface class com/juul/kable/DiscoveredCharacteristic : com/juul/kable/Characteristic {
+	public abstract fun getDescriptors ()Ljava/util/List;
+	public abstract fun getProperties-bty6q6U ()I
 }
 
 public final class com/juul/kable/Device {
 	public fun <init> ()V
 }
 
-public final class com/juul/kable/DiscoveredCharacteristic : com/juul/kable/Characteristic {
-	public fun <init> ()V
-	public fun getCharacteristicUuid ()Ljava/util/UUID;
-	public final fun getDescriptors ()Ljava/util/List;
-	public final fun getProperties-bty6q6U ()I
-	public fun getServiceUuid ()Ljava/util/UUID;
+public abstract interface class com/juul/kable/DiscoveredDescriptor : com/juul/kable/Descriptor {
 }
 
-public final class com/juul/kable/DiscoveredDescriptor : com/juul/kable/Descriptor {
-	public fun <init> ()V
-	public fun getCharacteristicUuid ()Ljava/util/UUID;
-	public fun getDescriptorUuid ()Ljava/util/UUID;
-	public fun getServiceUuid ()Ljava/util/UUID;
+public abstract interface class com/juul/kable/DiscoveredService : com/juul/kable/Service {
+	public abstract fun getCharacteristics ()Ljava/util/List;
 }
 
-public final class com/juul/kable/DiscoveredService : com/juul/kable/Service {
-	public fun <init> ()V
-	public final fun getCharacteristics ()Ljava/util/List;
-	public fun getServiceUuid ()Ljava/util/UUID;
+public abstract interface annotation class com/juul/kable/ExperimentalApi : java/lang/annotation/Annotation {
 }
 
 public abstract class com/juul/kable/Filter {
@@ -146,13 +140,22 @@ public final class com/juul/kable/Filter$Name$Prefix : com/juul/kable/Filter$Nam
 }
 
 public final class com/juul/kable/Filter$Service : com/juul/kable/Filter {
-	public fun <init> (Ljava/util/UUID;)V
-	public final fun component1 ()Ljava/util/UUID;
-	public final fun copy (Ljava/util/UUID;)Lcom/juul/kable/Filter$Service;
-	public static synthetic fun copy$default (Lcom/juul/kable/Filter$Service;Ljava/util/UUID;ILjava/lang/Object;)Lcom/juul/kable/Filter$Service;
+	public fun <init> (Lkotlin/uuid/Uuid;)V
+	public final fun component1 ()Lkotlin/uuid/Uuid;
+	public final fun copy (Lkotlin/uuid/Uuid;)Lcom/juul/kable/Filter$Service;
+	public static synthetic fun copy$default (Lcom/juul/kable/Filter$Service;Lkotlin/uuid/Uuid;ILjava/lang/Object;)Lcom/juul/kable/Filter$Service;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getUuid ()Ljava/util/UUID;
+	public final fun getUuid ()Lkotlin/uuid/Uuid;
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/juul/kable/Filter$ServiceData : com/juul/kable/Filter {
+	public fun <init> (Lkotlin/uuid/Uuid;[B[B)V
+	public synthetic fun <init> (Lkotlin/uuid/Uuid;[B[BILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getData ()[B
+	public final fun getDataMask ()[B
+	public final fun getUuid ()Lkotlin/uuid/Uuid;
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -160,10 +163,12 @@ public final class com/juul/kable/FilterPredicateBuilder {
 	public final fun getAddress ()Ljava/lang/String;
 	public final fun getManufacturerData ()Ljava/util/List;
 	public final fun getName ()Lcom/juul/kable/Filter$Name;
+	public final fun getServiceData ()Ljava/util/List;
 	public final fun getServices ()Ljava/util/List;
 	public final fun setAddress (Ljava/lang/String;)V
 	public final fun setManufacturerData (Ljava/util/List;)V
 	public final fun setName (Lcom/juul/kable/Filter$Name;)V
+	public final fun setServiceData (Ljava/util/List;)V
 	public final fun setServices (Ljava/util/List;)V
 }
 
@@ -171,33 +176,53 @@ public final class com/juul/kable/FiltersBuilder {
 	public final fun match (Lkotlin/jvm/functions/Function1;)V
 }
 
+public class com/juul/kable/GattRequestRejectedException : java/lang/IllegalStateException {
+	public fun <init> ()V
+}
+
+public final class com/juul/kable/GattStatusException : java/io/IOException {
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;I)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getStatus ()I
+}
+
+public final class com/juul/kable/Identifier {
+	public fun <init> (Lcom/juul/kable/btleplug/ffi/PeripheralId;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/juul/kable/IdentifierKt {
-	public static final fun toIdentifier (Ljava/lang/String;)Ljava/lang/String;
+	public static final fun toIdentifier (Ljava/lang/String;)Lcom/juul/kable/Identifier;
+}
+
+public final class com/juul/kable/InternalError : java/lang/Error {
 }
 
 public final class com/juul/kable/LazyCharacteristic : com/juul/kable/Characteristic {
-	public final fun component1 ()Ljava/util/UUID;
-	public final fun component2 ()Ljava/util/UUID;
-	public final fun copy (Ljava/util/UUID;Ljava/util/UUID;)Lcom/juul/kable/LazyCharacteristic;
-	public static synthetic fun copy$default (Lcom/juul/kable/LazyCharacteristic;Ljava/util/UUID;Ljava/util/UUID;ILjava/lang/Object;)Lcom/juul/kable/LazyCharacteristic;
+	public final fun component1 ()Lkotlin/uuid/Uuid;
+	public final fun component2 ()Lkotlin/uuid/Uuid;
+	public final fun copy (Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)Lcom/juul/kable/LazyCharacteristic;
+	public static synthetic fun copy$default (Lcom/juul/kable/LazyCharacteristic;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;ILjava/lang/Object;)Lcom/juul/kable/LazyCharacteristic;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getCharacteristicUuid ()Ljava/util/UUID;
-	public fun getServiceUuid ()Ljava/util/UUID;
+	public fun getCharacteristicUuid ()Lkotlin/uuid/Uuid;
+	public fun getServiceUuid ()Lkotlin/uuid/Uuid;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/juul/kable/LazyDescriptor : com/juul/kable/Descriptor {
-	public fun <init> (Ljava/util/UUID;Ljava/util/UUID;Ljava/util/UUID;)V
-	public final fun component1 ()Ljava/util/UUID;
-	public final fun component2 ()Ljava/util/UUID;
-	public final fun component3 ()Ljava/util/UUID;
-	public final fun copy (Ljava/util/UUID;Ljava/util/UUID;Ljava/util/UUID;)Lcom/juul/kable/LazyDescriptor;
-	public static synthetic fun copy$default (Lcom/juul/kable/LazyDescriptor;Ljava/util/UUID;Ljava/util/UUID;Ljava/util/UUID;ILjava/lang/Object;)Lcom/juul/kable/LazyDescriptor;
+	public fun <init> (Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)V
+	public final fun component1 ()Lkotlin/uuid/Uuid;
+	public final fun component2 ()Lkotlin/uuid/Uuid;
+	public final fun component3 ()Lkotlin/uuid/Uuid;
+	public final fun copy (Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)Lcom/juul/kable/LazyDescriptor;
+	public static synthetic fun copy$default (Lcom/juul/kable/LazyDescriptor;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;ILjava/lang/Object;)Lcom/juul/kable/LazyDescriptor;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getCharacteristicUuid ()Ljava/util/UUID;
-	public fun getDescriptorUuid ()Ljava/util/UUID;
-	public fun getServiceUuid ()Ljava/util/UUID;
+	public fun getCharacteristicUuid ()Lkotlin/uuid/Uuid;
+	public fun getDescriptorUuid ()Lkotlin/uuid/Uuid;
+	public fun getServiceUuid ()Lkotlin/uuid/Uuid;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -208,6 +233,12 @@ public final class com/juul/kable/ManufacturerData {
 	public final fun getData ()[B
 }
 
+public class com/juul/kable/NotConnectedException : java/io/IOException {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/juul/kable/ObservationExceptionPeripheral {
 	public final fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 }
@@ -215,19 +246,23 @@ public final class com/juul/kable/ObservationExceptionPeripheral {
 public abstract interface annotation class com/juul/kable/ObsoleteKableApi : java/lang/annotation/Annotation {
 }
 
-public abstract interface class com/juul/kable/Peripheral {
+public abstract interface class com/juul/kable/Peripheral : java/lang/AutoCloseable {
 	public abstract fun connect (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun disconnect (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public abstract fun getIdentifier ()Ljava/lang/String;
+	public abstract fun getIdentifier ()Lcom/juul/kable/Identifier;
 	public abstract fun getName ()Ljava/lang/String;
-	public abstract fun getServices ()Ljava/util/List;
+	public abstract fun getScope ()Lkotlinx/coroutines/CoroutineScope;
+	public abstract fun getServices ()Lkotlinx/coroutines/flow/StateFlow;
 	public abstract fun getState ()Lkotlinx/coroutines/flow/StateFlow;
+	public abstract fun maximumWriteValueLengthForType (Lcom/juul/kable/WriteType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun observe (Lcom/juul/kable/Characteristic;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun observe$default (Lcom/juul/kable/Peripheral;Lcom/juul/kable/Characteristic;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 	public abstract fun read (Lcom/juul/kable/Characteristic;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun read (Lcom/juul/kable/Descriptor;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun rssi (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun write (Lcom/juul/kable/Characteristic;[BLcom/juul/kable/WriteType;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 	public abstract fun write (Lcom/juul/kable/Descriptor;[BLkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun write$default (Lcom/juul/kable/Peripheral;Lcom/juul/kable/Characteristic;[BLcom/juul/kable/WriteType;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
 }
 
 public final class com/juul/kable/Peripheral$DefaultImpls {
@@ -236,12 +271,23 @@ public final class com/juul/kable/Peripheral$DefaultImpls {
 }
 
 public final class com/juul/kable/PeripheralBuilder {
+	public final fun getDisconnectTimeout-UwyO8pc ()J
+	public final fun getForceCharacteristicEqualityByUuid ()Z
 	public final fun logging (Lkotlin/jvm/functions/Function1;)V
 	public final fun observationExceptionHandler (Lkotlin/jvm/functions/Function3;)V
 	public final fun onServicesDiscovered (Lkotlin/jvm/functions/Function2;)V
+	public final fun setDisconnectTimeout-LRDsOJo (J)V
+	public final fun setForceCharacteristicEqualityByUuid (Z)V
 }
 
 public final class com/juul/kable/PeripheralKt {
+	public static final fun Peripheral (Lcom/juul/kable/Advertisement;Lkotlin/jvm/functions/Function1;)Lcom/juul/kable/Peripheral;
+	public static final fun Peripheral (Lcom/juul/kable/Identifier;Lkotlin/jvm/functions/Function1;)Lcom/juul/kable/Peripheral;
+	public static synthetic fun Peripheral$default (Lcom/juul/kable/Advertisement;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/juul/kable/Peripheral;
+	public static synthetic fun Peripheral$default (Lcom/juul/kable/Identifier;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/juul/kable/Peripheral;
+}
+
+public final class com/juul/kable/Peripheral_deprecatedKt {
 	public static final fun peripheral (Lkotlinx/coroutines/CoroutineScope;Lcom/juul/kable/Advertisement;Lkotlin/jvm/functions/Function1;)Lcom/juul/kable/Peripheral;
 	public static synthetic fun peripheral$default (Lkotlinx/coroutines/CoroutineScope;Lcom/juul/kable/Advertisement;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/juul/kable/Peripheral;
 }
@@ -251,7 +297,9 @@ public abstract interface class com/juul/kable/PlatformAdvertisement : com/juul/
 
 public final class com/juul/kable/ProfileKt {
 	public static final fun characteristicOf (Ljava/lang/String;Ljava/lang/String;)Lcom/juul/kable/Characteristic;
+	public static final fun characteristicOf (Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)Lcom/juul/kable/Characteristic;
 	public static final fun descriptorOf (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/juul/kable/Descriptor;
+	public static final fun descriptorOf (Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)Lcom/juul/kable/Descriptor;
 	public static final fun getBroadcast-G25LNqA (I)Z
 	public static final fun getExtendedProperties-G25LNqA (I)Z
 	public static final fun getIndicate-G25LNqA (I)Z
@@ -275,9 +323,9 @@ public abstract interface class com/juul/kable/Scanner {
 public final class com/juul/kable/ScannerBuilder {
 	public fun <init> ()V
 	public final fun filters (Lkotlin/jvm/functions/Function1;)V
-	public final fun getFilters ()Ljava/util/List;
+	public final synthetic fun getFilters ()Ljava/util/List;
 	public final fun logging (Lkotlin/jvm/functions/Function1;)V
-	public final fun setFilters (Ljava/util/List;)V
+	public final synthetic fun setFilters (Ljava/util/List;)V
 }
 
 public final class com/juul/kable/ScannerKt {
@@ -286,7 +334,7 @@ public final class com/juul/kable/ScannerKt {
 }
 
 public abstract interface class com/juul/kable/Service {
-	public abstract fun getServiceUuid ()Ljava/util/UUID;
+	public abstract fun getServiceUuid ()Lkotlin/uuid/Uuid;
 }
 
 public final class com/juul/kable/ServicesDiscoveredPeripheral {
@@ -302,7 +350,14 @@ public abstract class com/juul/kable/State {
 }
 
 public final class com/juul/kable/State$Connected : com/juul/kable/State {
-	public static final field INSTANCE Lcom/juul/kable/State$Connected;
+	public fun <init> (Lkotlinx/coroutines/CoroutineScope;)V
+	public final fun component1 ()Lkotlinx/coroutines/CoroutineScope;
+	public final fun copy (Lkotlinx/coroutines/CoroutineScope;)Lcom/juul/kable/State$Connected;
+	public static synthetic fun copy$default (Lcom/juul/kable/State$Connected;Lkotlinx/coroutines/CoroutineScope;ILjava/lang/Object;)Lcom/juul/kable/State$Connected;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getScope ()Lkotlinx/coroutines/CoroutineScope;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class com/juul/kable/State$Connecting : com/juul/kable/State {
@@ -392,6 +447,24 @@ public final class com/juul/kable/State$Disconnecting : com/juul/kable/State {
 	public static final field INSTANCE Lcom/juul/kable/State$Disconnecting;
 }
 
+public final class com/juul/kable/UnmetRequirementException : java/io/IOException {
+	public final fun getReason ()Lcom/juul/kable/UnmetRequirementReason;
+}
+
+public final class com/juul/kable/UnmetRequirementReason : java/lang/Enum {
+	public static final field BluetoothDisabled Lcom/juul/kable/UnmetRequirementReason;
+	public static final field LocationServicesDisabled Lcom/juul/kable/UnmetRequirementReason;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/juul/kable/UnmetRequirementReason;
+	public static fun values ()[Lcom/juul/kable/UnmetRequirementReason;
+}
+
+public final class com/juul/kable/UuidKt {
+	public static final fun characteristic (Lkotlin/uuid/Uuid$Companion;Ljava/lang/String;)Lkotlin/uuid/Uuid;
+	public static final fun descriptor (Lkotlin/uuid/Uuid$Companion;Ljava/lang/String;)Lkotlin/uuid/Uuid;
+	public static final fun service (Lkotlin/uuid/Uuid$Companion;Ljava/lang/String;)Lkotlin/uuid/Uuid;
+}
+
 public final class com/juul/kable/WriteType : java/lang/Enum {
 	public static final field WithResponse Lcom/juul/kable/WriteType;
 	public static final field WithoutResponse Lcom/juul/kable/WriteType;
@@ -437,7 +510,7 @@ public final class com/juul/kable/logs/Logging {
 }
 
 public abstract interface class com/juul/kable/logs/Logging$DataProcessor {
-	public abstract fun process ([BLcom/juul/kable/logs/Logging$DataProcessor$Operation;Ljava/util/UUID;Ljava/util/UUID;Ljava/util/UUID;)Ljava/lang/String;
+	public abstract fun process ([BLcom/juul/kable/logs/Logging$DataProcessor$Operation;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;Lkotlin/uuid/Uuid;)Ljava/lang/String;
 }
 
 public final class com/juul/kable/logs/Logging$DataProcessor$Operation : java/lang/Enum {

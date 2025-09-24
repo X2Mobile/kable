@@ -14,8 +14,20 @@ plugins {
     alias(libs.plugins.api)
 }
 
-tasks.dokkaHtmlMultiModule.configure {
-    outputDirectory.fileProvider(layout.buildDirectory.file("dokkaHtmlMultiModule").map { it.asFile })
+dokka {
+    dokkaPublications.html {
+        outputDirectory.set(layout.buildDirectory.dir("dokkaHtmlMultiModule"))
+    }
+}
+
+dependencies {
+    dokka(project(":kable-core"))
+    dokka(project(":kable-log-engine-khronicle"))
+}
+
+apiValidation {
+    ignoredProjects.add("kable-btleplug-ffi")
+    ignoredProjects.add("kable-default-permissions")
 }
 
 allprojects {

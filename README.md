@@ -2,6 +2,7 @@
 ![badge][badge-ios]
 ![badge][badge-js]
 ![badge][badge-mac]
+![badge][badge-jvm]
 [![Slack](https://img.shields.io/badge/Slack-%23juul--libraries-ECB22E.svg?logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgNTQgNTQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTkuNzEyLjEzM2E1LjM4MSA1LjM4MSAwIDAgMC01LjM3NiA1LjM4NyA1LjM4MSA1LjM4MSAwIDAgMCA1LjM3NiA1LjM4Nmg1LjM3NlY1LjUyQTUuMzgxIDUuMzgxIDAgMCAwIDE5LjcxMi4xMzNtMCAxNC4zNjVINS4zNzZBNS4zODEgNS4zODEgMCAwIDAgMCAxOS44ODRhNS4zODEgNS4zODEgMCAwIDAgNS4zNzYgNS4zODdoMTQuMzM2YTUuMzgxIDUuMzgxIDAgMCAwIDUuMzc2LTUuMzg3IDUuMzgxIDUuMzgxIDAgMCAwLTUuMzc2LTUuMzg2IiBmaWxsPSIjMzZDNUYwIi8+PHBhdGggZD0iTTUzLjc2IDE5Ljg4NGE1LjM4MSA1LjM4MSAwIDAgMC01LjM3Ni01LjM4NiA1LjM4MSA1LjM4MSAwIDAgMC01LjM3NiA1LjM4NnY1LjM4N2g1LjM3NmE1LjM4MSA1LjM4MSAwIDAgMCA1LjM3Ni01LjM4N20tMTQuMzM2IDBWNS41MkE1LjM4MSA1LjM4MSAwIDAgMCAzNC4wNDguMTMzYTUuMzgxIDUuMzgxIDAgMCAwLTUuMzc2IDUuMzg3djE0LjM2NGE1LjM4MSA1LjM4MSAwIDAgMCA1LjM3NiA1LjM4NyA1LjM4MSA1LjM4MSAwIDAgMCA1LjM3Ni01LjM4NyIgZmlsbD0iIzJFQjY3RCIvPjxwYXRoIGQ9Ik0zNC4wNDggNTRhNS4zODEgNS4zODEgMCAwIDAgNS4zNzYtNS4zODcgNS4zODEgNS4zODEgMCAwIDAtNS4zNzYtNS4zODZoLTUuMzc2djUuMzg2QTUuMzgxIDUuMzgxIDAgMCAwIDM0LjA0OCA1NG0wLTE0LjM2NWgxNC4zMzZhNS4zODEgNS4zODEgMCAwIDAgNS4zNzYtNS4zODYgNS4zODEgNS4zODEgMCAwIDAtNS4zNzYtNS4zODdIMzQuMDQ4YTUuMzgxIDUuMzgxIDAgMCAwLTUuMzc2IDUuMzg3IDUuMzgxIDUuMzgxIDAgMCAwIDUuMzc2IDUuMzg2IiBmaWxsPSIjRUNCMjJFIi8+PHBhdGggZD0iTTAgMzQuMjQ5YTUuMzgxIDUuMzgxIDAgMCAwIDUuMzc2IDUuMzg2IDUuMzgxIDUuMzgxIDAgMCAwIDUuMzc2LTUuMzg2di01LjM4N0g1LjM3NkE1LjM4MSA1LjM4MSAwIDAgMCAwIDM0LjI1bTE0LjMzNi0uMDAxdjE0LjM2NEE1LjM4MSA1LjM4MSAwIDAgMCAxOS43MTIgNTRhNS4zODEgNS4zODEgMCAwIDAgNS4zNzYtNS4zODdWMzQuMjVhNS4zODEgNS4zODEgMCAwIDAtNS4zNzYtNS4zODcgNS4zODEgNS4zODEgMCAwIDAtNS4zNzYgNS4zODciIGZpbGw9IiNFMDFFNUEiLz48L2c+PC9zdmc+&labelColor=611f69)](https://kotlinlang.slack.com/messages/juul-libraries/)
 
 # Kable
@@ -10,6 +11,51 @@
 with Bluetooth Low Energy devices.
 
 Usage is demonstrated with the [SensorTag sample app].
+
+## UUIDs
+
+UUIDs (Universally Unique Identifiers) are used to uniquely identify various components of a
+Bluetooth Low Energy device. The Bluetooth Base UUID (`00000000-0000-1000-8000-00805F9B34FB`) allows
+for short form (16-bit or 32-bit) UUIDs which are reserved for standard, predefined components
+(e.g. 0x180D for "Heart Rate Service", or 0x2A37 for "Heart Rate Measurement").
+128-bit UUIDs outside of the Bluetooth Base UUID are typically used for custom applications.
+
+The `Bluetooth.BaseUuid` is provided to simplify defining 16-bit or 32-bit UUIDs. Simply add (`+`)
+a 16-bit or 32-bit UUID (in [`Int`] or [`Long`] form) to the Bluetooth Base UUID to get a "full"
+[`Uuid`] representation; for example:
+
+```kotlin
+val uuid16bit = 0x180D
+val heartRateServiceUuid = Bluetooth.BaseUuid + uuid16bit
+println(heartRateServiceUuid) // Output: 0000180d-0000-1000-8000-00805f9b34fb
+```
+
+Web Bluetooth named UUIDs may also be used to acquire [`Uuid`]s via the following [`Uuid`] extension
+functions:
+
+- `Uuid.service(name: String)`
+- `Uuid.characteristic(name: String)`
+- `Uuid.descriptor(name: String)`
+
+For example:
+
+```kotlin
+val heartRateServiceUuid = Uuid.service("heart_rate")
+println(heartRateServiceUuid) // Output: 0000180d-0000-1000-8000-00805f9b34fb
+```
+
+> [!NOTE]
+> List of known UUID names can be found in [`Uuid.kt`](https://github.com/JuulLabs/kable/blob/main/kable-core/src/commonMain/kotlin/Uuid.kt).
+
+Additional example shorthand notations:
+
+| Shorthand                         | Canonical UUID                         |
+|-----------------------------------|----------------------------------------|
+| `Bluetooth.BaseUuid + 0x180D`     | `0000180D-0000-1000-8000-00805F9B34FB` |
+| `Bluetooth.BaseUuid + 0x12345678` | `12345678-0000-1000-8000-00805F9B34FB` |
+| `Uuid.service("blood_pressure")`  | `00001810-0000-1000-8000-00805F9B34FB` |
+| `Uuid.characteristic("altitude")` | `00002AB3-0000-1000-8000-00805F9B34FB` |
+| `Uuid.descriptor("valid_range")`  | `00002906-0000-1000-8000-00805F9B34FB` |
 
 ## Scanning
 
@@ -37,20 +83,21 @@ val scanner = Scanner {
 Scan results can be filtered by providing a list of [`Filter`]s via the `filters` DSL.
 The following filters are supported:
 
-| Filter             | Android | Apple | JavaScript |
-|--------------------|:-------:|:-----:|:----------:|
-| `Service`          |   ✓✓    |  ✓✓*  |     ✓✓     |
-| `Name`             |   ✓✓    |   ✓   |     ✓✓     |
-| `NamePrefix`       |    ✓    |   ✓   |     ✓✓     |
-| `Address`          |   ✓✓    |       |            |
-| `ManufacturerData` |   ✓✓    |   ✓   |     ✓✓     |
+| Filter             |    Android    |     Apple     | JavaScript |      JVM      |
+|--------------------|:-------------:|:-------------:|:----------:|:-------------:|
+| `Service`          |       ✓       | ✓<sup>2</sup> |     ✓      | ✓<sup>1</sup> |
+| `Name`             |       ✓       | ✓<sup>1</sup> |     ✓      | ✓<sup>1</sup> |
+| `NamePrefix`       | ✓<sup>1</sup> | ✓<sup>1</sup> |     ✓      | ✓<sup>1</sup> |
+| `Address`          |       ✓       |               |            |               |
+| `ManufacturerData` |       ✓       | ✓<sup>1</sup> |     ✓      | ✓<sup>1</sup> |
 
-✓✓ = Supported natively  
-✓ = Support provided by Kable via flow filter  
-✓✓* = Supported natively if the only filter type used, otherwise falls back to flow filter  
+✓&nbsp; Supported natively  
+✓<sup>1</sup> Support provided by Kable via flow filter  
+✓<sup>2</sup> Supported natively if the only filter type used, otherwise falls back to flow filter  
 
-_When a filter is supported natively, the system will often be able to perform scan optimizations. If feasible, it is
-recommended to provide only `Filter.Service` filters (and at least one) — as it is natively supported on all platforms._
+> [!TIP]
+> When a filter is supported natively, the system will often be able to perform scan optimizations. If feasible, it is
+> recommended to provide only `Filter.Service` filters (and at least one) — as it is natively supported on all platforms.
 
 When filters are specified, only [`Advertisement`]s that match at least one [`Filter`] will be emitted. For example, if
 you had the following peripherals nearby when performing a scan:
@@ -67,7 +114,7 @@ To have peripherals D1 and D3 emitted during a scan, you could use the following
 val scanner = Scanner {
     filters {
         match {
-            services = listOf(uuidFrom("0000aa80-0000-1000-8000-00805f9b34fb")) // SensorTag
+            services = listOf(Bluetooth.BaseUuid + 0xaa80) // SensorTag
         }
         match {
             name = Filter.Name.Prefix("Ex")
@@ -103,8 +150,9 @@ val scanner = Scanner {
 }
 ```
 
-_The `scanSettings` property is only available on Android and is considered a Kable obsolete API, meaning it will be
-removed when a DSL specific API becomes available._
+> [!NOTE]
+> _The `scanSettings` property is only available on Android and is considered a Kable obsolete API, meaning it will be
+> removed when a DSL specific API becomes available._
 
 ### JavaScript
 
@@ -113,27 +161,42 @@ features" enabled via:_ `chrome://flags/#enable-experimental-web-platform-featur
 
 ## Peripheral
 
-Once an [`Advertisement`] is obtained, it can be converted to a [`Peripheral`] via the [`CoroutineScope.peripheral`]
-extension function. [`Peripheral`] objects represent actions that can be performed against a remote peripheral, such as
-connection handling and I/O operations.
+Once an [`Advertisement`] is obtained, it can be converted to a [`Peripheral`] via the `Peripheral` builder function:
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement)
-```
-
-Note that if the scope is closed, the peripheral is automatically disconnected. Ensure that the lifetime of the used
-scope matches the required lifetime of the peripheral connection. See more details about this in the [Structured
-Concurrency](#structured-concurrency) section below.
-
-### Configuration
-
-To configure a `peripheral`, options may be set in the builder lambda:
-
-```kotlin
-val peripheral = scope.peripheral(advertisement) {
-    // Set peripheral configuration.
+val peripheral = Peripheral(advertisement) {
+    // Configure peripheral.
 }
 ```
+
+[`Peripheral`] objects represent actions that can be performed against a remote peripheral, such as connection
+handling and I/O operations. [`Peripheral`] objects provide a [`CoroutineScope`] `scope` property, and coroutines
+can be `launch`ed from it:
+
+```kotlin
+peripheral.scope.launch {
+    // Long running task that will be cancelled when peripheral is disposed
+    // (i.e. `peripheral.close()` is called).
+}
+```
+
+> [!IMPORTANT]
+> When a [`Peripheral`] is no longer needed, it should be disposed via `close`:
+>
+> ```kotlin
+> peripheral.close()
+> ```
+>
+> Once a [`Peripheral`] is disposed (via `close`) it can no longer be used (e.g. calling `connect` will throw
+> `IllegalStateException`).
+
+> [!TIP]
+> `launch`ed coroutines from a `Peripheral` object's `scope` are permitted to run until `Peripheral.dispose()`
+> is called (i.e. can span across reconnects); for tasks that should only run for the duration of a single connection
+> (i.e. shutdown on disconnect), `launch` via the `CoroutineScope` returned from `Peripheral.connect` (or
+> [`Connected`] state `scope` property) instead.
+
+### Configuration
 
 #### Logging
 
@@ -141,7 +204,7 @@ By default, Kable only logs a small number of warnings when unexpected failures 
 logging may be enabled and configured via the `logging` DSL, for example:
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     logging {
         level = Events // or Data
     }
@@ -157,7 +220,7 @@ The available log levels are:
 Available logging settings are as follows (all settings are optional; shown are defaults, when not specified):
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     logging {
         engine = SystemLogEngine
         level = Warnings
@@ -178,7 +241,7 @@ Display format of I/O data may be customized, either by configuring the `Hex` re
 `DataProcessor`, for example:
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     logging {
         data = Hex {
             separator = " "
@@ -201,7 +264,7 @@ When logging, the identity of the peripheral is prefixed on log messages to diff
 peripherals are logging. The identifier (for the purposes of logging) can be set via the `identifier` property:
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     logging {
         identifier = "Example"
     }
@@ -213,6 +276,7 @@ The default (when not specified, or set to `null`) is to use the platform specif
 - Android: Hardware (MAC) address (e.g. "00:11:22:AA:BB:CC")
 - Apple: The UUID associated with the peer
 - JavaScript: A `DOMString` that uniquely identifies a device
+- JVM: A platform specific string. This is a UUID on Mac, a MAC address on Windows, and a path on Linux.
 
 #### Service Discovery
 
@@ -220,7 +284,7 @@ All platforms support an `onServicesDiscovered` action (that is executed after s
 are wired up):
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     onServicesDiscovered {
         // Perform any desired I/O operations.
     }
@@ -234,7 +298,7 @@ _Exceptions thrown in `onServicesDiscovered` are propagated to the `Peripheral`'
 On Android targets, additional configuration options are available (all configuration directives are optional):
 
 ```kotlin
-val peripheral = scope.peripheral(advertisement) {
+val peripheral = Peripheral(advertisement) {
     autoConnectIf { false } // default
     onServicesDiscovered {
         requestMtu(...)
@@ -269,11 +333,11 @@ One possible strategy for a fast initial connection attempt that falls back to l
 ```kotlin
 val autoConnect = MutableStateFlow(false)
 
-val peripheral = scope.peripheral {
+val peripheral = Peripheral {
     autoConnectIf { autoConnect.value }
 }
 
-while (peripheral.state.value != Connected) {
+while (peripheral.state.value !is Connected) {
     autoConnect.value = try {
         peripheral.connect()
         false
@@ -300,11 +364,11 @@ val options = Options {
         }
     }
     optionalServices = listOf(
-        uuidFrom("f000aa80-0451-4000-b000-000000000000"),
-        uuidFrom("f000aa81-0451-4000-b000-000000000000"),
+        Uuid.parse("f000aa80-0451-4000-b000-000000000000"),
+        Uuid.parse("f000aa81-0451-4000-b000-000000000000"),
     )
 }
-val peripheral = requestPeripheral(options, scope)
+val peripheral = requestPeripheral(options)
 ```
 
 > After the user selects a device to pair with this origin, the origin is allowed to access any service whose UUID was
@@ -321,11 +385,22 @@ method suspends until a connection is established and ready (or a failure occurs
 connected, services have been discovered, and observations (if any) have been re-wired. _Service discovery occurs
 automatically upon connection._
 
-_Multiple concurrent calls to [`connect`] will all suspend until connection is ready._
+> [!TIP]
+> Multiple concurrent calls to [`connect`] will all suspend until connection is ready.
 
 ```kotlin
 peripheral.connect()
 ```
+
+> [!TIP]
+> The [`connect`] function returns a [`CoroutineScope`] that can be used to `launch` tasks that
+> should run until peripheral disconnects. When [`disconnect`] is called, any coroutines
+> `launch`ed from the [`CoroutineScope`] returned by [`connect`] will be cancelled prior to
+> performing the underlying disconnect process.
+
+> [!TIP]
+> The connection [`CoroutineScope`] is also available as the `scope` property on the [`Connected`]
+> [`State`][connection-state].
 
 To disconnect, the [`disconnect`] function will disconnect an active connection, or cancel an in-flight connection
 attempt. The [`disconnect`] function suspends until the peripheral has settled on a disconnected state.
@@ -348,8 +423,9 @@ The [`state`] will typically transition through the following [`State`][connecti
 
 ![Connection states](artwork/connection-states.png)
 
-_[`Disconnecting`] state only occurs on Android platform. JavaScript and Apple-based platforms transition directly from
-[`Connected`] to [`Disconnected`] (upon calling [`disconnect`] function, or when a connection is dropped)._
+> [!NOTE]
+> [`Disconnecting`] state is skipped on Apple and JavaScript when connection closure is initiated by peripheral (or
+> peripheral goes out-of-range).
 
 ### I/O
 
@@ -358,12 +434,12 @@ whereas characteristics and descriptors have the capability of being read from, 
 
 For example, a peripheral might have the following structure:
 
-- Service S1 (`00001815-0000-1000-8000-00805f9b34fb`)
+- Service S1 (`0x1815` or `00001815-0000-1000-8000-00805f9b34fb`)
     - Characteristic C1
         - Descriptor D1
         - Descriptor D2
-    - Characteristic C2 (`00002a56-0000-1000-8000-00805f9b34fb`)
-        - Descriptor D3 (`00002902-0000-1000-8000-00805f9b34fb`)
+    - Characteristic C2 (`0x2a56` or `00002a56-0000-1000-8000-00805f9b34fb`)
+        - Descriptor D3 (`gatt.client_characteristic_configuration` or `00002902-0000-1000-8000-00805f9b34fb`)
 - Service S2
     - Characteristic C3
 
@@ -379,9 +455,9 @@ In the above example, to lazily access "Descriptor D3":
 
 ```kotlin
 val descriptor = descriptorOf(
-    service = "00001815-0000-1000-8000-00805f9b34fb",
-    characteristic = "00002a56-0000-1000-8000-00805f9b34fb",
-    descriptor = "00002902-0000-1000-8000-00805f9b34fb"
+    service = Bluetooth.BaseUuid + 0x1815,
+    characteristic = Bluetooth.BaseUuid + 0x2A56,
+    descriptor = Uuid.descriptor("gatt.client_characteristic_configuration"),
 )
 ```
 
@@ -393,30 +469,45 @@ objects retrieved from [`Peripheral.services`] when no longer needed.
 To access "Descriptor D3" using a discovered descriptor:
 
 ```kotlin
-val services = peripheral.services ?: error("Services have not been discovered")
+val services = peripheral.services.value ?: error("Services have not been discovered")
 val descriptor = services
-    .first { it.serviceUuid == uuidFrom("00001815-0000-1000-8000-00805f9b34fb") }
+    .first { it.serviceUuid == Uuid.parse("00001815-0000-1000-8000-00805f9b34fb") }
     .characteristics
-    .first { it.characteristicUuid == uuidFrom("00002a56-0000-1000-8000-00805f9b34fb") }
+    .first { it.characteristicUuid == Uuid.parse("00002a56-0000-1000-8000-00805f9b34fb") }
     .descriptors
-    .first { it.descriptorUuid == uuidFrom("00002902-0000-1000-8000-00805f9b34fb") }
+    .first { it.descriptorUuid == Uuid.parse("00002902-0000-1000-8000-00805f9b34fb") }
 ```
 
-_This example uses a similar search algorithm as `descriptorOf`, but other search methods may be utilized. For example,
-properties of the characteristic could be queried to find a specific characteristic that is expected to be the parent of
-the sought after descriptor. When searching for a specific characteristic, descriptors can be read that may identity the
-sought after characteristic._
+> [!TIP]
+> Shorthand notations are available for UUIDs. The accessing "Descriptor D3" example could be written as:
+>
+> ```kotlin
+> val services = peripheral.services.value ?: error("Services have not been discovered")
+> val descriptor = services
+>   .first { it.serviceUuid == Bluetooth.BaseUuid + 0x1815 }
+>   .characteristics
+>   .first { it.characteristicUuid == Bluetooth.BaseUuid + 0x2A56 }
+>   .descriptors
+>   .first { it.descriptorUuid == Uuid.descriptor("gatt.client_characteristic_configuration") }
+> ```
+
+> [!TIP]
+> This example uses a similar search algorithm as `descriptorOf`, but other search methods may be utilized. For example,
+> properties of the characteristic could be queried to find a specific characteristic that is expected to be the parent of
+> the sought after descriptor. When searching for a specific characteristic, descriptors can be read that may identity the
+> sought after characteristic.
 
 When connected, data can be read from, or written to, characteristics and/or descriptors via [`read`] and [`write`]
 functions.
-
-_The [`read`] and [`write`] functions throw [`NotReadyException`] until a connection is established._
 
 ```kotlin
 val data = peripheral.read(characteristic)
 
 peripheral.write(descriptor, byteArrayOf(1, 2, 3))
 ```
+
+> [!NOTE]
+> _The [`read`] and [`write`] functions throw [`NotConnectedException`] until a connection is established._
 
 ### Observation
 
@@ -449,7 +540,7 @@ associated characteristic is invalid or cannot be found, then a `NoSuchElementEx
 failures are propagated through (and terminate) the [`observe`] [`Flow`], for example:
 
 ```kotlin
-scope.peripheral(advertisement) {
+Peripheral(advertisement) {
     observationExceptionHandler { cause ->
         // Log failure instead of propagating associated `observe` flow.
         println("Observation failure suppressed: $cause")
@@ -479,28 +570,6 @@ The `onSubscription` action is useful in situations where an initial operation i
 (such as writing a configuration to the peripheral and expecting the response to come back in the form of a
 characteristic change).
 
-## Structured Concurrency
-
-Peripheral objects/connections are scoped to a [Coroutine scope]. When creating a [`Peripheral`], the
-[`CoroutineScope.peripheral`] extension function is used, which scopes the returned [`Peripheral`] to the
-[`CoroutineScope`] receiver. If the [`CoroutineScope`] receiver is cancelled then the [`Peripheral`] will disconnect and
-be disposed.
-
-```kotlin
-Scanner()
-    .advertisements
-    .filter { advertisement -> advertisement.name?.startsWith("Example") }
-    .map { advertisement -> scope.peripheral(advertisement) }
-    .onEach { peripheral -> peripheral.connect() }
-    .launchIn(scope)
-
-delay(60_000L)
-scope.cancel() // All `peripherals` will implicitly disconnect and be disposed.
-```
-
-_[`Peripheral.disconnect`] is the preferred method of disconnecting peripherals, but disposal via Coroutine scope
-cancellation is provided to prevent connection leaks._
-
 ## Background Support
 
 To enable [background support] on Apple, configure the `CentralManager` _before_ using most of Kable's functionality:
@@ -518,90 +587,17 @@ after initialization will result in an `IllegalStateException` being thrown.
 
 ### Android Permissions
 
-Kable [declares permissions for common use cases](core/src/androidMain/AndroidManifest.xml), but your app's
-configuration may need to be adjusted under the following conditions:
+Kable does not declare any permissions; it is expected that the consuming app declares any necessary
+permissions. For detailed information on Android Bluetooth permissions, refer to the official
+Android Developers guide: [Bluetooth permissions]
 
-<table>
-<tr>
-<td align="center">Your app...</td>
-<td align="center"><code>AndroidManifest.xml</code> additions</td>
-</tr>
-
-<tr>
-<td>
-
-[Obtains the user's location (e.g. maps)](https://developer.android.com/training/location/permissions#foreground)
-
-</td>
-<td>
-
-```xml
-<uses-permission
-    android:name="android.permission.ACCESS_COARSE_LOCATION"
-    tools:node="replace"/>
-<uses-permission
-    android:name="android.permission.ACCESS_FINE_LOCATION"
-    tools:node="replace"/>
-```
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-[Derives the user's location from Bluetooth Low Energy scans](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#declare-android12-or-higher)
-
-</td>
-<td>
-
-```xml
-<uses-permission
-    android:name="android.permission.BLUETOOTH_SCAN"
-    tools:node="replace"/>
-```
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-[Performs background Bluetooth Low Energy scans](https://developer.android.com/training/location/permissions#background)
-
-</td>
-<td>
-
-```xml
-<uses-permission
-    android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
-    android:maxSdkVersion="30"/>
-```
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-[Requires Bluetooth Low Energy (and won't function without it)](https://developer.android.com/guide/topics/connectivity/bluetooth/permissions#features)
-
-</td>
-<td>
-
-```xml
-<uses-feature
-    android:name="android.hardware.bluetooth_le"
-    android:required="true"/>
-```
-
-</td>
-</tr>
-</table>
+> [!TIP]
+> For convenience, the `com.juul.kable:kable-default-permissions` Maven artifact may be used to
+> provide permissions for common use cases.
 
 ### Gradle
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.juul.kable/core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.juul.kable/core)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.juul.kable/kable-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.juul.kable/kable-core)
 
 Kable can be configured via Gradle Kotlin DSL as follows:
 
@@ -621,6 +617,7 @@ kotlin {
     macosX64()
     iosX64()
     iosArm64()
+    jvm()
 
     sourceSets {
         commonMain.dependencies {
@@ -630,6 +627,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutinesVersion}")
+            implementation("com.juul.kable:kable-default-permissions:${kableVersion}") // Optional
         }
     }
 }
@@ -658,41 +656,45 @@ limitations under the License.
 ```
 
 
+[Bluetooth permissions]: https://developer.android.com/develop/connectivity/bluetooth/bt-permissions
 [Coroutine scope]: https://kotlinlang.org/docs/reference/coroutines/coroutine-context-and-dispatchers.html#coroutine-scope
 [Coroutines with multithread support for Kotlin/Native]: https://github.com/Kotlin/kotlinx.coroutines/issues/462
 [SensorTag sample app]: https://github.com/JuulLabs/sensortag
-[`Advertisement`]: https://juullabs.github.io/kable/core/com.juul.kable/-advertisement/index.html
-[`Characteristic`]: https://juullabs.github.io/kable/core/com.juul.kable/-characteristic/index.html
-[`Connected`]: https://juullabs.github.io/kable/core/com.juul.kable/-state/-connected/index.html
-[`CoroutineScope.peripheral`]: https://juullabs.github.io/kable/core/com.juul.kable/peripheral.html
-[`CoroutineScope.requestPeripheral`]: https://juullabs.github.io/kable/core/com.juul.kable/request-peripheral.html
+[`Advertisement`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-advertisement/index.html
+[`Characteristic`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-characteristic/index.html
+[`Connected`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-state/-connected/index.html
+[`CoroutineScope.peripheral`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/peripheral.html
 [`CoroutineScope`]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/
-[`Disconnected`]: https://juullabs.github.io/kable/core/com.juul.kable/-state/-disconnected/index.html
-[`Disconnecting`]: https://juullabs.github.io/kable/core/com.juul.kable/-state/-disconnecting/index.html
-[`Filter`]: https://juullabs.github.io/kable/core/com.juul.kable/-filter/index.html
+[`Disconnected`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-state/-disconnected/index.html
+[`Disconnecting`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-state/-disconnecting/index.html
+[`Filter`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-filter/index.html
 [`Flow`]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/
-[`NotReadyException`]: https://juullabs.github.io/kable/core/com.juul.kable/-not-ready-exception/index.html
-[`Options`]: https://juullabs.github.io/kable/core/com.juul.kable/-options/index.html
-[`Peripheral.disconnect`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/disconnect.html
-[`Peripheral.services`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/services.html
-[`Peripheral`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/index.html
+[`Int`]: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/
+[`Long`]: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/
+[`NotConnectedException`]: https://juullabs.github.io/kable/kable-exceptions/com.juul.kable/-not-connected-exception/index.html
+[`Options`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-options/index.html
+[`Peripheral.disconnect`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/disconnect.html
+[`Peripheral.services`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/services.html
+[`Peripheral`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/index.html
 [`ScanSettings`]: https://developer.android.com/reference/kotlin/android/bluetooth/le/ScanSettings
-[`Scanner`]: https://juullabs.github.io/kable/core/com.juul.kable/-scanner.html
-[`WithoutResponse`]: https://juullabs.github.io/kable/core/com.juul.kable/-write-type/-without-response/index.html
-[`WriteType`]: https://juullabs.github.io/kable/core/com.juul.kable/-write-type/index.html
-[`advertisements`]: https://juullabs.github.io/kable/core/com.juul.kable/-scanner/advertisements.html
-[`characteristicOf`]: https://juullabs.github.io/kable/core/com.juul.kable/characteristic-of.html
-[`connect`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/connect.html
+[`Scanner`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-scanner.html
+[`Uuid`]: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.uuid/-uuid/
+[`WithoutResponse`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-write-type/-without-response/index.html
+[`WriteType`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-write-type/index.html
+[`advertisements`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-scanner/advertisements.html
+[`characteristicOf`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/characteristic-of.html
 [`connectGatt`]: https://developer.android.com/reference/android/bluetooth/BluetoothDevice#connectGatt(android.content.Context,%20boolean,%20android.bluetooth.BluetoothGattCallback)
-[`descriptorOf`]: https://juullabs.github.io/kable/core/com.juul.kable/descriptor-of.html
-[`disconnect`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/disconnect.html
+[`connect`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/connect.html
+[`descriptorOf`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/descriptor-of.html
+[`disconnect`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/disconnect.html
 [`first`]: https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/first.html
-[`observe`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/observe.html
-[`read`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/read.html
-[`state`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/state.html
-[`writeWithoutResponse`]: https://juullabs.github.io/kable/core/com.juul.kable/write-without-response.html
-[`write`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral/write.html
-[`observationExceptionHandler`]: https://juullabs.github.io/kable/core/com.juul.kable/-peripheral-builder/observation-exception-handler.html
+[`observationExceptionHandler`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral-builder/observation-exception-handler.html
+[`observe`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/observe.html
+[`read`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/read.html
+[`requestPeripheral`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/request-peripheral.html
+[`state`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/state.html
+[`writeWithoutResponse`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/write-without-response.html
+[`write`]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-peripheral/write.html
 [background support]: https://developer.apple.com/library/archive/documentation/NetworkingInternetWeb/Conceptual/CoreBluetooth_concepts/CoreBluetoothBackgroundProcessingForIOSApps/PerformingTasksWhileYourAppIsInTheBackground.html
 [badge-android]: http://img.shields.io/badge/platform-android-6EDB8D.svg?style=flat
 [badge-ios]: http://img.shields.io/badge/platform-ios-CDCDCD.svg?style=flat
@@ -704,4 +706,4 @@ limitations under the License.
 [badge-wasm]: https://img.shields.io/badge/platform-wasm-624FE8.svg?style=flat
 [badge-watchos]: http://img.shields.io/badge/platform-watchos-C0C0C0.svg?style=flat
 [badge-windows]: http://img.shields.io/badge/platform-windows-4D76CD.svg?style=flat
-[connection-state]: https://juullabs.github.io/kable/core/com.juul.kable/-state/index.html
+[connection-state]: https://juullabs.github.io/kable/kable-core/com.juul.kable/-state/index.html

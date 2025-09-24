@@ -6,6 +6,7 @@ import com.juul.kable.logs.Logging
 import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.withContext
 import kotlinx.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.coroutineContext
 
 internal expect fun Peripheral.observationHandler(): Observation.Handler
 
@@ -43,6 +45,7 @@ internal expect fun Peripheral.observationHandler(): Observation.Handler
 internal class Observers<T>(
     private val peripheral: Peripheral,
     private val logging: Logging,
+    private val forceCharacteristicEqualityByUuid: Boolean,
     private val exceptionHandler: ObservationExceptionHandler,
 ) {
 
@@ -75,7 +78,7 @@ internal class Observers<T>(
                     exceptionHandler(ObservationExceptionPeripheral(peripheral), e)
                 }
             }
-            .filter { event -> event.isAssociatedWith(characteristic) }
+            .filter { event -> event.isAssociatedWith(characteristic, forceCharacteristicEqualityByUuid) }
             .onEach { event ->
                 if (event is Error) {
                     exceptionHandler(ObservationExceptionPeripheral(peripheral), event.cause)
@@ -90,9 +93,8 @@ internal class Observers<T>(
                     withContext(NonCancellable) {
                         observation.onCompletion(onSubscription)
                     }
-                } catch (e: CancellationException) {
-                    throw e
                 } catch (e: Exception) {
+                    coroutineContext.ensureActive()
                     exceptionHandler(ObservationExceptionPeripheral(peripheral), e)
                 }
             }
@@ -100,14 +102,13 @@ internal class Observers<T>(
 
     suspend fun onConnected() {
         synchronized(lock) {
-            observations.entries
+            observations.entries.toSet()
         }.forEach { (_, observation) ->
             // Pipe failures to `characteristicChanges` while honoring in-flight connection cancellations.
             try {
                 observation.onConnected()
-            } catch (cancellation: CancellationException) {
-                throw cancellation
             } catch (e: Exception) {
+                coroutineContext.ensureActive()
                 throw IOException("Failed to observe characteristic during connection attempt", e)
             }
         }
