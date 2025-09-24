@@ -6,9 +6,9 @@ import android.bluetooth.BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION
 import android.bluetooth.BluetoothGatt.GATT_SUCCESS
 import android.os.Handler
 import com.juul.kable.State.Disconnected
+import com.juul.kable.android.GATT_AUTH_FAIL
 import com.juul.kable.android.GattStatus
 import com.juul.kable.coroutines.childSupervisor
-import com.juul.kable.external.GATT_AUTH_FAIL
 import com.juul.kable.gatt.Callback
 import com.juul.kable.gatt.Response
 import com.juul.kable.gatt.Response.OnServicesDiscovered
@@ -191,7 +191,7 @@ internal class Connection(
             }
         }.also(::checkResponse)
 
-        when (response.status) {
+        return when (response.status) {
             // `lock` should always enforce a 1:1 matching of request to response, but if an Android `BluetoothGattCallback`
             // method gets called out of order then we'll cast to the wrong response type.
             Success ->
@@ -200,7 +200,7 @@ internal class Connection(
                         "Expected response type ${type.simpleName} but received ${response::class.simpleName}",
                     )
             in BondingStatuses -> throw BondRequiredException()
-            else -> throw GattStatusException(response.toString())
+            else -> throw GattStatusException(response.toString(), status = response.status.value)
         }
     }
 

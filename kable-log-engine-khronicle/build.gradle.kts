@@ -1,5 +1,5 @@
 plugins {
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
     id("org.jetbrains.dokka")
     id("org.jmailen.kotlinter")
     kotlin("multiplatform")

@@ -252,7 +252,7 @@ internal class BluetoothDeviceAndroidPeripheral(
                 detail(writeType)
                 detail(data, Operation.Write)
             }
-            connection.execute<OnCharacteristicWrite> {
+            connectionOrThrow().execute<OnCharacteristicWrite> {
                 writeCharacteristicOrThrow(platformCharacteristic, data, writeType.intValue)
             }
         }
@@ -278,7 +278,7 @@ internal class BluetoothDeviceAndroidPeripheral(
                 message = "Retrying read"
                 detail(characteristic)
             }
-            connection.execute {
+            connectionOrThrow().execute {
                 readCharacteristicOrThrow(platformCharacteristic)
             }
         }.value!!
@@ -312,7 +312,7 @@ internal class BluetoothDeviceAndroidPeripheral(
                 detail(platformDescriptor)
                 detail(data, Operation.Write)
             }
-            connection.execute<OnDescriptorWrite> {
+            connectionOrThrow().execute<OnDescriptorWrite> {
                 writeDescriptorOrThrow(platformDescriptor, data)
             }
         }
@@ -338,7 +338,7 @@ internal class BluetoothDeviceAndroidPeripheral(
                 message = "Retrying read"
                 detail(descriptor)
             }
-            connection.execute {
+            connectionOrThrow().execute {
                 readDescriptorOrThrow(platformDescriptor)
             }
         }.value!!

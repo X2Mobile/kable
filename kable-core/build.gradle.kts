@@ -5,7 +5,6 @@ plugins {
     id("kotlin-parcelize")
     id("org.jetbrains.dokka")
     id("org.jmailen.kotlinter")
-    id("maven-publish")
     kotlin("multiplatform")
 }
 
