@@ -24,6 +24,10 @@ kotlin {
     }
 }
 
+signing {
+    isRequired = false
+}
+
 dokka {
     pluginsConfiguration.html {
         footerMessage.set("(c) JUUL Labs, Inc.")

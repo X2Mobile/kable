@@ -13,6 +13,10 @@ kotlin {
     }
 }
 
+signing {
+    isRequired = false
+}
+
 uniffiKotlin {
     optimized = System.getenv("CI").toBoolean()
     packageName = "com.juul.kable.btleplug.ffi"
