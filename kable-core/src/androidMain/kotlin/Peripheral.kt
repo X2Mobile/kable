@@ -1,34 +1,34 @@
 package com.juul.kable
 
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import kotlinx.coroutines.CoroutineScope
+import android.bluetooth.le.ScanResult
 
-public actual typealias Identifier = String
-
-public actual fun String.toIdentifier(): Identifier {
-    require(BluetoothAdapter.checkBluetoothAddress(this)) {
-        "MAC Address has invalid format: $this"
-    }
-    return this
-}
-
-public actual fun CoroutineScope.peripheral(
+public actual fun Peripheral(
     advertisement: Advertisement,
     builderAction: PeripheralBuilderAction,
 ): Peripheral {
     advertisement as ScanResultAndroidAdvertisement
-    return peripheral(advertisement.bluetoothDevice, builderAction)
+    return Peripheral(advertisement.bluetoothDevice, builderAction)
 }
 
-public fun CoroutineScope.peripheral(
+@ExperimentalApi // Experimental while evaluating if this API introduces any footguns.
+public fun Peripheral(
+    scanResult: ScanResult,
+    builderAction: PeripheralBuilderAction,
+): Peripheral = Peripheral(scanResult.device, builderAction)
+
+/** @throws IllegalStateException If bluetooth is not supported. */
+public fun Peripheral(
+    identifier: Identifier,
+    builderAction: PeripheralBuilderAction = {},
+): Peripheral = Peripheral(getBluetoothAdapter().getRemoteDevice(identifier.uppercase()), builderAction)
+
+public fun Peripheral(
     bluetoothDevice: BluetoothDevice,
     builderAction: PeripheralBuilderAction = {},
 ): Peripheral {
-    val builder = PeripheralBuilder()
-    builder.builderAction()
+    val builder = PeripheralBuilder().apply(builderAction)
     return BluetoothDeviceAndroidPeripheral(
-        coroutineContext,
         bluetoothDevice,
         builder.autoConnectPredicate,
         builder.transport,
@@ -37,13 +37,6 @@ public fun CoroutineScope.peripheral(
         builder.observationExceptionHandler,
         builder.onServicesDiscovered,
         builder.logging,
+        builder.disconnectTimeout,
     )
-}
-
-public fun CoroutineScope.peripheral(
-    identifier: Identifier,
-    builderAction: PeripheralBuilderAction = {},
-): Peripheral {
-    val bluetoothDevice = getBluetoothAdapter().getRemoteDevice(identifier)
-    return peripheral(bluetoothDevice, builderAction)
 }

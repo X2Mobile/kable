@@ -1,10 +1,10 @@
 package com.juul.kable
 
-import com.benasher44.uuid.Uuid
 import com.juul.kable.external.BluetoothAdvertisingEvent
 import com.juul.kable.external.BluetoothDevice
 import com.juul.kable.external.iterable
 import org.khronos.webgl.DataView
+import kotlin.uuid.Uuid
 
 internal class BluetoothAdvertisingEventWebBluetoothAdvertisement(
     private val advertisement: BluetoothAdvertisingEvent,
@@ -53,6 +53,15 @@ internal class BluetoothAdvertisingEventWebBluetoothAdvertisement(
                 (entry[1] as DataView).buffer.toByteArray(),
             )
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class.js != other::class.js) return false
+        other as BluetoothAdvertisingEventWebBluetoothAdvertisement
+        return advertisement == other.advertisement
+    }
+
+    override fun hashCode(): Int = advertisement.hashCode()
 
     override fun toString(): String =
         "Advertisement(identifier=$identifier, name=$name, rssi=$rssi, txPower=$txPower)"

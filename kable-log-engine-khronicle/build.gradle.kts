@@ -1,8 +1,8 @@
 plugins {
-    kotlin("multiplatform")
-    id("org.jmailen.kotlinter")
+    id("com.vanniktech.maven.publish")
     id("org.jetbrains.dokka")
-    id("maven-publish")
+    id("org.jmailen.kotlinter")
+    kotlin("multiplatform")
 }
 
 kotlin {
@@ -21,5 +21,15 @@ kotlin {
             api(project(":kable-core"))
             api(libs.khronicle)
         }
+    }
+}
+
+signing {
+    isRequired = false
+}
+
+dokka {
+    pluginsConfiguration.html {
+        footerMessage.set("(c) JUUL Labs, Inc.")
     }
 }

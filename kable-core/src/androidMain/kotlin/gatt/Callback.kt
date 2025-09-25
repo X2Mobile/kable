@@ -11,9 +11,10 @@ import android.bluetooth.BluetoothProfile.STATE_CONNECTED
 import android.bluetooth.BluetoothProfile.STATE_CONNECTING
 import android.bluetooth.BluetoothProfile.STATE_DISCONNECTED
 import android.bluetooth.BluetoothProfile.STATE_DISCONNECTING
-import com.juul.kable.ConnectionLostException
+import com.juul.kable.NotConnectedException
 import com.juul.kable.ObservationEvent
 import com.juul.kable.ObservationEvent.CharacteristicChange
+import com.juul.kable.PlatformDiscoveredCharacteristic
 import com.juul.kable.State
 import com.juul.kable.State.Disconnected.Status.Cancelled
 import com.juul.kable.State.Disconnected.Status.CentralDisconnected
@@ -23,6 +24,7 @@ import com.juul.kable.State.Disconnected.Status.LinkManagerProtocolTimeout
 import com.juul.kable.State.Disconnected.Status.PeripheralDisconnected
 import com.juul.kable.State.Disconnected.Status.Timeout
 import com.juul.kable.State.Disconnected.Status.Unknown
+import com.juul.kable.android.GattStatus
 import com.juul.kable.external.GATT_CONN_CANCEL
 import com.juul.kable.external.GATT_CONN_FAIL_ESTABLISH
 import com.juul.kable.external.GATT_CONN_L2C_FAILURE
@@ -41,7 +43,6 @@ import com.juul.kable.logs.Logging
 import com.juul.kable.logs.Logging.DataProcessor.Operation.Change
 import com.juul.kable.logs.Logging.DataProcessor.Operation.Read
 import com.juul.kable.logs.detail
-import com.juul.kable.toLazyCharacteristic
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.channels.SendChannel
@@ -50,7 +51,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 internal class Callback(
-    private val state: MutableStateFlow<State>,
+    val state: MutableStateFlow<State>,
     private val mtu: MutableStateFlow<Int?>,
     private val onCharacteristicChanged: MutableSharedFlow<ObservationEvent<ByteArray>>,
     logging: Logging,
@@ -61,6 +62,7 @@ internal class Callback(
 
     val onResponse = Channel<Response>(CONFLATED)
     val onMtuChanged = Channel<OnMtuChanged>(CONFLATED)
+    val onServiceChanged = Channel<OnServiceChanged>(CONFLATED)
 
     override fun onPhyUpdate(
         gatt: BluetoothGatt,
@@ -103,8 +105,6 @@ internal class Callback(
             detail("newState", newState.connectionStateString)
         }
 
-        if (newState == STATE_DISCONNECTED) gatt.close()
-
         when (newState) {
             STATE_CONNECTING -> state.value = State.Connecting.Bluetooth
             STATE_CONNECTED -> state.value = State.Connecting.Services
@@ -113,12 +113,12 @@ internal class Callback(
         }
 
         if (newState == STATE_DISCONNECTING || newState == STATE_DISCONNECTED) {
-            onResponse.close(ConnectionLostException())
+            onResponse.close(NotConnectedException())
         }
     }
 
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-        val event = OnServicesDiscovered(GattStatus(status))
+        val event = OnServicesDiscovered(GattStatus(status), gatt.services)
         logger.debug {
             message = "onServicesDiscovered"
             detail(event.status)
@@ -189,7 +189,7 @@ internal class Callback(
             detail(characteristic)
             detail(value, Change)
         }
-        val event = CharacteristicChange(characteristic.toLazyCharacteristic(), value)
+        val event = CharacteristicChange(PlatformDiscoveredCharacteristic(characteristic), value)
         onCharacteristicChanged.tryEmitOrLog(event)
     }
 
@@ -273,6 +273,11 @@ internal class Callback(
         }
         onMtuChanged.trySendOrLog(event)
         if (status == GATT_SUCCESS) this.mtu.value = mtu
+    }
+
+    override fun onServiceChanged(gatt: BluetoothGatt) {
+        logger.debug { message = "onServiceChanged" }
+        onServiceChanged.trySendOrLog(OnServiceChanged)
     }
 
     private fun <E> SendChannel<E>.trySendOrLog(element: E) {

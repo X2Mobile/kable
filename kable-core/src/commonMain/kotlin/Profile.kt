@@ -2,12 +2,11 @@
 
 package com.juul.kable
 
-import com.benasher44.uuid.Uuid
-import com.benasher44.uuid.uuidFrom
 import com.juul.kable.Characteristic.Properties
 import com.juul.kable.WriteType.WithResponse
 import com.juul.kable.WriteType.WithoutResponse
 import kotlin.jvm.JvmInline
+import kotlin.uuid.Uuid
 
 public interface Service {
     public val serviceUuid: Uuid
@@ -83,28 +82,39 @@ internal expect class PlatformService
 internal expect class PlatformCharacteristic
 internal expect class PlatformDescriptor
 
-/** Wrapper around platform specific Bluetooth LE service. Holds a strong reference to underlying service. */
-public expect class DiscoveredService : Service {
-    override val serviceUuid: Uuid
-    internal val service: PlatformService
+public interface DiscoveredService : Service {
     public val characteristics: List<DiscoveredCharacteristic>
 }
 
-/** Wrapper around platform specific Bluetooth LE characteristic. Holds a strong reference to underlying characteristic. */
-public expect class DiscoveredCharacteristic : Characteristic {
-    override val serviceUuid: Uuid
-    override val characteristicUuid: Uuid
-    internal val characteristic: PlatformCharacteristic
+public interface DiscoveredCharacteristic : Characteristic {
     public val descriptors: List<DiscoveredDescriptor>
     public val properties: Properties
 }
 
+public interface DiscoveredDescriptor : Descriptor
+
+/** Wrapper around platform specific Bluetooth LE service. Holds a strong reference to underlying service. */
+internal expect class PlatformDiscoveredService : DiscoveredService {
+    val service: PlatformService
+    override val serviceUuid: Uuid
+    override val characteristics: List<PlatformDiscoveredCharacteristic>
+}
+
+/** Wrapper around platform specific Bluetooth LE characteristic. Holds a strong reference to underlying characteristic. */
+internal expect class PlatformDiscoveredCharacteristic : DiscoveredCharacteristic {
+    val characteristic: PlatformCharacteristic
+    override val serviceUuid: Uuid
+    override val characteristicUuid: Uuid
+    override val descriptors: List<PlatformDiscoveredDescriptor>
+    override val properties: Properties
+}
+
 /** Wrapper around platform specific Bluetooth LE descriptor. Holds a strong reference to underlying descriptor. */
-public expect class DiscoveredDescriptor : Descriptor {
+internal expect class PlatformDiscoveredDescriptor : DiscoveredDescriptor {
+    val descriptor: PlatformDescriptor
     override val serviceUuid: Uuid
     override val characteristicUuid: Uuid
     override val descriptorUuid: Uuid
-    internal val descriptor: PlatformDescriptor
 }
 
 public data class LazyCharacteristic internal constructor(
@@ -118,29 +128,48 @@ public data class LazyDescriptor(
     public override val descriptorUuid: Uuid,
 ) : Descriptor
 
+@Deprecated(
+    """
+    Use `characteristicOf` that accepts `Uuid` arguments.
+    Example: `characteristicOf(Uuid.service("battery_service"), Uuid.characteristic("battery_level"))`,
+    """,
+    replaceWith = ReplaceWith("characteristicOf(Uuid.parse(service), Uuid.parse(characteristic))"),
+    level = DeprecationLevel.ERROR,
+)
 public fun characteristicOf(
     service: String,
     characteristic: String,
 ): Characteristic = LazyCharacteristic(
-    serviceUuid = uuidFrom(service),
-    characteristicUuid = uuidFrom(characteristic),
+    serviceUuid = Uuid.parse(service),
+    characteristicUuid = Uuid.parse(characteristic),
 )
 
+public fun characteristicOf(service: Uuid, characteristic: Uuid): Characteristic =
+    LazyCharacteristic(service, characteristic)
+
+@Deprecated(
+    "Use `descriptorOf` that accepts `Uuid` arguments.",
+    replaceWith = ReplaceWith("descriptorOf(Uuid.parse(service), Uuid.parse(characteristic), Uuid.parse(descriptor))"),
+    level = DeprecationLevel.ERROR,
+)
 public fun descriptorOf(
     service: String,
     characteristic: String,
     descriptor: String,
 ): Descriptor = LazyDescriptor(
-    serviceUuid = uuidFrom(service),
-    characteristicUuid = uuidFrom(characteristic),
-    descriptorUuid = uuidFrom(descriptor),
+    serviceUuid = Uuid.parse(service),
+    characteristicUuid = Uuid.parse(characteristic),
+    descriptorUuid = Uuid.parse(descriptor),
 )
 
-internal fun List<DiscoveredService>.obtain(
+public fun descriptorOf(service: Uuid, characteristic: Uuid, descriptor: Uuid): Descriptor =
+    LazyDescriptor(service, characteristic, descriptor)
+
+internal fun List<PlatformDiscoveredService>.obtain(
     characteristic: Characteristic,
     properties: Properties?,
 ): PlatformCharacteristic {
-    if (characteristic is DiscoveredCharacteristic) return characteristic.characteristic
+    if (characteristic is PlatformDiscoveredCharacteristic) return characteristic.characteristic
 
     val discoveredService = firstOrNull {
         it.serviceUuid == characteristic.serviceUuid
@@ -154,10 +183,10 @@ internal fun List<DiscoveredService>.obtain(
     return discoveredCharacteristic.characteristic
 }
 
-internal fun List<DiscoveredService>.obtain(
+internal fun List<PlatformDiscoveredService>.obtain(
     descriptor: Descriptor,
 ): PlatformDescriptor {
-    if (descriptor is DiscoveredDescriptor) return descriptor.descriptor
+    if (descriptor is PlatformDiscoveredDescriptor) return descriptor.descriptor
 
     val discoveredService = firstOrNull {
         it.serviceUuid == descriptor.serviceUuid

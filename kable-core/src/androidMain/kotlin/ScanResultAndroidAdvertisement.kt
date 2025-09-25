@@ -9,9 +9,12 @@ import android.bluetooth.le.ScanResult
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.ParcelUuid
-import com.benasher44.uuid.Uuid
+import androidx.core.util.isNotEmpty
 import com.juul.kable.PlatformAdvertisement.BondState
 import kotlinx.parcelize.Parcelize
+import kotlin.uuid.Uuid
+import kotlin.uuid.toJavaUuid
+import kotlin.uuid.toKotlinUuid
 
 @Parcelize
 internal class ScanResultAndroidAdvertisement(
@@ -65,21 +68,32 @@ internal class ScanResultAndroidAdvertisement(
         get() = scanResult.scanRecord?.txPowerLevel
 
     override val uuids: List<Uuid>
-        get() = scanResult.scanRecord?.serviceUuids?.map { it.uuid } ?: emptyList()
+        get() = scanResult.scanRecord?.serviceUuids?.map { it.uuid.toKotlinUuid() } ?: emptyList()
+
+    internal val serviceData: Map<ParcelUuid, ByteArray>?
+        get() = scanResult.scanRecord?.serviceData
 
     override fun serviceData(uuid: Uuid): ByteArray? =
-        scanResult.scanRecord?.serviceData?.get(ParcelUuid(uuid))
+        scanResult.scanRecord?.serviceData?.get(ParcelUuid(uuid.toJavaUuid()))
 
     override fun manufacturerData(companyIdentifierCode: Int): ByteArray? =
         scanResult.scanRecord?.getManufacturerSpecificData(companyIdentifierCode)
 
     override val manufacturerData: ManufacturerData?
-        get() = scanResult.scanRecord?.manufacturerSpecificData?.takeIf { it.size() > 0 }?.let {
+        get() = scanResult.scanRecord?.manufacturerSpecificData?.takeIf { it.isNotEmpty() }?.let {
             ManufacturerData(
                 it.keyAt(0),
                 it.valueAt(0),
             )
         }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ScanResultAndroidAdvertisement) return false
+        return scanResult == other.scanResult
+    }
+
+    override fun hashCode(): Int = scanResult.hashCode()
 
     override fun toString(): String =
         "Advertisement(address=$address, name=$name, rssi=$rssi, txPower=$txPower)"
